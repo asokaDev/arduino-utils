@@ -1,9 +1,3 @@
-/*************************************************************
-
-  This is a simple demo of sending and receiving some data.
-  Be sure to check out other examples!
- *************************************************************/
-
 // Template ID, Device Name and Auth Token are provided by the Blynk.Cloud
 // See the Device Info tab, or Template settings
 #define BLYNK_TEMPLATE_ID           "TMPLIL1djL1G"
@@ -77,12 +71,20 @@ BLYNK_WRITE(V4)         // MOD Temperatura
 
 BLYNK_WRITE(V5)         // MOD Tanque
 {
-  // Set incoming value from pin V0 to a variable
-  double value = param.asDouble();
+  // Set incoming value from pin V5 to a variable
+  int value = param.asInt();
+  float distancia = sonar.ping_cm();
 
   // Update state
-  Serial.println("***** TANQUE: " + String(value) + " *****");
-  Blynk.virtualWrite(V5, value);
+  while (value > distancia) {
+    digitalWrite(Bomba2, HIGH);
+  }
+  digitalWrite(Bomba2, LOW);
+  
+  while (value < distancia) {
+    digitalWrite(Bomba1, HIGH);
+  }
+  digitalWrite(Bomba1, LOW);
 }
 
 
@@ -160,8 +162,8 @@ void loop()
 
 
   float distancia = sonar.ping_cm();
-  Blynk.virtualWrite(V6, 22.22);
-  Serial.println(String(22.22) + "\t\t");
+  Blynk.virtualWrite(V6, distancia);
+  Serial.print(String(distancia) + "\t\t");
 
     
   Blynk.run();
